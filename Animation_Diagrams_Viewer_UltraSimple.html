@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation System - Diagrams Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-button {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .diagram-container {
+            text-align: center;
+            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            max-height: 80vh;
+        }
+
+        .diagram-title {
+            font-size: 1.8em;
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .diagram-description {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .zoom-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .tab-button {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Animation System</h1>
+            <p class="subtitle">Interactive Diagrams Viewer</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('class-diagram')">📊 Class Diagram</button>
+            <button class="tab-button" onclick="showTab('basic-animation')">🎯 Basic Animation</button>
+            <button class="tab-button" onclick="showTab('sequencer-flow')">🔗 Sequencer Flow</button>
+            <button class="tab-button" onclick="showTab('editor-preview')">👁️ Editor Preview</button>
+            <button class="tab-button" onclick="showTab('rect-transform')">📐 RectTransform</button>
+            <button class="tab-button" onclick="showTab('sequencer-group')">🎭 Sequencer Group</button>
+        </div>
+
+        <!-- Class Diagram Tab -->
+        <div id="class-diagram" class="tab-content active">
+            <h2 class="diagram-title">📊 Animation System Class Diagram</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Complete class hierarchy showing all animation components, their relationships, and inheritance structure. The system follows a component-based architecture with BaseAnimator as the foundation.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('class-diagram')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('class-diagram')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('class-diagram')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TD
+                        A[MonoBehaviour] --> B[BaseAnimator]
+                        B --> C[CanvasGroupFadeAnimator]
+                        B --> D[ImageColorAnimator]
+                        B --> E[TextMeshProUGUIColorAnimator]
+                        B --> F[LabelCounter]
+                        B --> G[RectTransformAnimator]
+                        B --> H[SequencerAnimator]
+                        A --> I[SequencerAnimatorGroup]
+                        H --> B
+                        I --> J[SequencerList]
+                        J --> K[SequencerEntry]
+                        K --> B
+                </div>
+            </div>
+        </div>
+
+        <!-- Basic Animation Sequence Tab -->
+        <div id="basic-animation" class="tab-content">
+            <h2 class="diagram-title">🎯 Basic Animation Playback Sequence</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Shows the fundamental flow of animation playback from user initiation to completion, including timing calculations, easing, and loop handling.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('basic-animation')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('basic-animation')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('basic-animation')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph LR
+                        A[User] --> B[BaseAnimator]
+                        B --> C[CaptureState]
+                        B --> D[SetPlaying]
+                        B --> E[AnimationLoop]
+                        E --> F[Update]
+                        F --> G[CalculateTime]
+                        G --> H[Evaluate]
+                        H --> I[UpdateComponent]
+                        I --> J[CheckComplete]
+                        J --> K[HandleLoop]
+                        K --> E
+                </div>
+            </div>
+        </div>
+
+        <!-- Sequencer Flow Tab -->
+        <div id="sequencer-flow" class="tab-content">
+            <h2 class="diagram-title">🔗 Sequencer Animation Flow</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Demonstrates how SequencerAnimator coordinates multiple child animators, showing both sequential and parallel execution modes with proper timing synchronization.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('sequencer-flow')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('sequencer-flow')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('sequencer-flow')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TD
+                        A[User] --> B[SequencerAnimator]
+                        B --> C[CacheDuration]
+                        B --> D[PlayChildren]
+                        D --> E[Child1]
+                        D --> F[Child2]
+                        D --> G[Child3]
+                        B --> H[UpdateLoop]
+                        H --> I[CalculateTime]
+                        I --> J[CheckMode]
+                        J --> K[Sequential]
+                        J --> L[Parallel]
+                        K --> E
+                        K --> F
+                        K --> G
+                        L --> E
+                        L --> F
+                        L --> G
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor Preview Tab -->
+        <div id="editor-preview" class="tab-content">
+            <h2 class="diagram-title">👁️ Editor Preview Workflow</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Illustrates the editor preview system that allows real-time animation testing in Unity Editor without entering play mode, including state management and restoration.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('editor-preview')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('editor-preview')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('editor-preview')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph LR
+                        A[Editor] --> B[OnValidate]
+                        B --> C[BaseAnimator]
+                        C --> D[CheckPreview]
+                        D --> E[EvaluatePreview]
+                        E --> F[UpdateComponent]
+                        A --> G[UpdateLoop]
+                        G --> C
+                        C --> H[CheckPlaying]
+                        H --> I[UseEditorTime]
+                        I --> J[Evaluate]
+                        J --> F
+                        A --> K[Stop]
+                        K --> L[RestoreState]
+                        L --> F
+                </div>
+            </div>
+        </div>
+
+        <!-- RectTransform Tab -->
+        <div id="rect-transform" class="tab-content">
+            <h2 class="diagram-title">📐 RectTransformAnimator Complex Animation</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Shows the comprehensive RectTransform animation workflow, including multiple property animations (position, scale, rotation, anchors) with both DOTween runtime and manual editor evaluation.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('rect-transform')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('rect-transform')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('rect-transform')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TD
+                        A[User] --> B[RectTransformAnimator]
+                        B --> C[KillTweens]
+                        B --> D[ApplyStartValues]
+                        D --> E[SetPosition]
+                        D --> F[SetAnchors]
+                        D --> G[SetSize]
+                        D --> H[SetScale]
+                        D --> I[SetRotation]
+                        E --> J[RectTransform]
+                        F --> J
+                        G --> J
+                        H --> J
+                        I --> J
+                        B --> K[CheckMode]
+                        K --> L[PlayingMode]
+                        K --> M[EditorMode]
+                        L --> N[CreateTweens]
+                        M --> O[ManualUpdate]
+                </div>
+            </div>
+        </div>
+
+        <!-- Sequencer Group Tab -->
+        <div id="sequencer-group" class="tab-content">
+            <h2 class="diagram-title">🎭 SequencerAnimatorGroup Complex Sequence</h2>
+            <div class="diagram-description">
+                <strong>Overview:</strong> Demonstrates the advanced grouping system that manages multiple animation sequences with different insertion strategies (Append, Prepend, Join, Insert) for complex choreographed animations.
+            </div>
+            <div class="controls">
+                <button class="zoom-btn" onclick="zoomIn('sequencer-group')">🔍 Zoom In</button>
+                <button class="zoom-btn" onclick="zoomOut('sequencer-group')">🔍 Zoom Out</button>
+                <button class="zoom-btn" onclick="resetZoom('sequencer-group')">🔄 Reset</button>
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TD
+                        A[User] --> B[SequencerGroup]
+                        B --> C[ResetSequence]
+                        B --> D[ProcessLists]
+                        D --> E[List1]
+                        D --> F[List2]
+                        E --> G[CheckInsertType]
+                        G --> H[Append]
+                        G --> I[Prepend]
+                        G --> J[Join]
+                        G --> K[Insert]
+                        H --> L[AddToEnd]
+                        I --> M[AddToStart]
+                        J --> N[AddParallel]
+                        K --> O[AddAtPosition]
+                        L --> P[DOTween]
+                        M --> P
+                        N --> P
+                        O --> P
+                        B --> Q[AutoPlay]
+                        Q --> P
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid with minimal configuration
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            logLevel: 0  // Disable logging to avoid console errors
+        });
+
+        // Tab switching functionality
+        function showTab(tabId) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Re-render mermaid diagram for the active tab
+            setTimeout(() => {
+                const mermaidElement = document.querySelector(`#${tabId} .mermaid`);
+                if (mermaidElement) {
+                    // Clear any existing content
+                    mermaidElement.innerHTML = '';
+                    
+                    // Get the original graph content
+                    const graphContent = getGraphContent(tabId);
+                    
+                    // Set the content and render
+                    mermaidElement.textContent = graphContent;
+                    
+                    try {
+                        mermaid.run({
+                            nodes: [mermaidElement]
+                        });
+                    } catch (error) {
+                        console.log('Mermaid rendering error:', error);
+                        // Fallback: show text representation
+                        mermaidElement.innerHTML = `<pre style="text-align: left; background: #f5f5f5; padding: 20px; border-radius: 5px;">${graphContent}</pre>`;
+                    }
+                }
+            }, 100);
+        }
+
+        // Get graph content for each tab
+        function getGraphContent(tabId) {
+            const graphs = {
+                'class-diagram': 'graph TD\n    A[MonoBehaviour] --> B[BaseAnimator]\n    B --> C[CanvasGroupFadeAnimator]\n    B --> D[ImageColorAnimator]\n    B --> E[TextMeshProUGUIColorAnimator]\n    B --> F[LabelCounter]\n    B --> G[RectTransformAnimator]\n    B --> H[SequencerAnimator]\n    A --> I[SequencerAnimatorGroup]\n    H --> B\n    I --> J[SequencerList]\n    J --> K[SequencerEntry]\n    K --> B',
+                
+                'basic-animation': 'graph LR\n    A[User] --> B[BaseAnimator]\n    B --> C[CaptureState]\n    B --> D[SetPlaying]\n    B --> E[AnimationLoop]\n    E --> F[Update]\n    F --> G[CalculateTime]\n    G --> H[Evaluate]\n    H --> I[UpdateComponent]\n    I --> J[CheckComplete]\n    J --> K[HandleLoop]\n    K --> E',
+                
+                'sequencer-flow': 'graph TD\n    A[User] --> B[SequencerAnimator]\n    B --> C[CacheDuration]\n    B --> D[PlayChildren]\n    D --> E[Child1]\n    D --> F[Child2]\n    D --> G[Child3]\n    B --> H[UpdateLoop]\n    H --> I[CalculateTime]\n    I --> J[CheckMode]\n    J --> K[Sequential]\n    J --> L[Parallel]\n    K --> E\n    K --> F\n    K --> G\n    L --> E\n    L --> F\n    L --> G',
+                
+                'editor-preview': 'graph LR\n    A[Editor] --> B[OnValidate]\n    B --> C[BaseAnimator]\n    C --> D[CheckPreview]\n    D --> E[EvaluatePreview]\n    E --> F[UpdateComponent]\n    A --> G[UpdateLoop]\n    G --> C\n    C --> H[CheckPlaying]\n    H --> I[UseEditorTime]\n    I --> J[Evaluate]\n    J --> F\n    A --> K[Stop]\n    K --> L[RestoreState]\n    L --> F',
+                
+                'rect-transform': 'graph TD\n    A[User] --> B[RectTransformAnimator]\n    B --> C[KillTweens]\n    B --> D[ApplyStartValues]\n    D --> E[SetPosition]\n    D --> F[SetAnchors]\n    D --> G[SetSize]\n    D --> H[SetScale]\n    D --> I[SetRotation]\n    E --> J[RectTransform]\n    F --> J\n    G --> J\n    H --> J\n    I --> J\n    B --> K[CheckMode]\n    K --> L[PlayingMode]\n    K --> M[EditorMode]\n    L --> N[CreateTweens]\n    M --> O[ManualUpdate]',
+                
+                'sequencer-group': 'graph TD\n    A[User] --> B[SequencerGroup]\n    B --> C[ResetSequence]\n    B --> D[ProcessLists]\n    D --> E[List1]\n    D --> F[List2]\n    E --> G[CheckInsertType]\n    G --> H[Append]\n    G --> I[Prepend]\n    G --> J[Join]\n    G --> K[Insert]\n    H --> L[AddToEnd]\n    I --> M[AddToStart]\n    J --> N[AddParallel]\n    K --> O[AddAtPosition]\n    L --> P[DOTween]\n    M --> P\n    N --> P\n    O --> P\n    B --> Q[AutoPlay]\n    Q --> P'
+            };
+            
+            return graphs[tabId] || '';
+        }
+
+        // Zoom functionality
+        let zoomLevels = {};
+
+        function zoomIn(tabId) {
+            if (!zoomLevels[tabId]) zoomLevels[tabId] = 1;
+            zoomLevels[tabId] = Math.min(zoomLevels[tabId] + 0.1, 2);
+            applyZoom(tabId);
+        }
+
+        function zoomOut(tabId) {
+            if (!zoomLevels[tabId]) zoomLevels[tabId] = 1;
+            zoomLevels[tabId] = Math.max(zoomLevels[tabId] - 0.1, 0.5);
+            applyZoom(tabId);
+        }
+
+        function resetZoom(tabId) {
+            zoomLevels[tabId] = 1;
+            applyZoom(tabId);
+        }
+
+        function applyZoom(tabId) {
+            const container = document.querySelector(`#${tabId} .diagram-container`);
+            if (container) {
+                container.style.transform = `scale(${zoomLevels[tabId]})`;
+                container.style.transformOrigin = 'center center';
+            }
+        }
+
+        // Initialize zoom levels and render first tab
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = ['class-diagram', 'basic-animation', 'sequencer-flow', 'editor-preview', 'rect-transform', 'sequencer-group'];
+            tabs.forEach(tabId => {
+                zoomLevels[tabId] = 1;
+            });
+            
+            // Render the first tab's diagram
+            setTimeout(() => {
+                showTab('class-diagram');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
